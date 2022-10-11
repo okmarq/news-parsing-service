@@ -17,4 +17,45 @@
         <li>Your template at <code><a href="{{ 'C:/wamp/www/wprojects/news-parsing-service/templates/auth/index.html.twig'|file_link(0) }}">templates/auth/index.html.twig</a></code></li>
     </ul>
 </div>
+<div class='container'>
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <button class="nav-link active" id="nav-guest-tab" data-bs-toggle="tab" data-bs-target="#nav-guest" type="button" role="tab" aria-controls="nav-guest" aria-selected="true">Guest</button>
+
+            <button class="nav-link" id="nav-admin-tab" data-bs-toggle="tab" data-bs-target="#nav-admin" type="button" role="tab" aria-controls="nav-admin" aria-selected="false">Admin</button>
+
+            <button class="nav-link" id="nav-moderator-tab" data-bs-toggle="tab" data-bs-target="#nav-moderator" type="button" role="tab" aria-controls="nav-moderator" aria-selected="false">Moderator</button>
+        </div>
+    </nav>
+
+    <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane fade show active" id="nav-guest" role="tabpanel" aria-labelledby="nav-guest-tab">
+            <ul>
+                <li>Sign in to view our articles</li>
+                <li>See permissions for Admin or Moderator in Tab beside Guest</li>
+            </ul>
+        </div>
+
+        <div class="tab-pane fade" id="nav-admin" role="tabpanel" aria-labelledby="nav-admin-tab">
+            <ul>
+                <li>You will be able to view articles</li>
+                <li>You will be able to delete articles</li>
+                <li>
+                    <span>Sign in: </span>
+                    <a href="{{ path('admin') }}" type="button" class="btn btn-outline-warning btn-sm">As Admin</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="tab-pane fade" id="nav-moderator" role="tabpanel" aria-labelledby="nav-moderator-tab">
+            <ul>
+                <li>You will be able to view articles</li>
+                <li>
+                    <span>Sign in: </span>
+                    <a href="{{ path('moderator') }}" type="button" class="btn btn-outline-primary btn-sm">As Moderator</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
 {% endblock %}
