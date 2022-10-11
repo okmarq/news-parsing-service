@@ -4,12 +4,13 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 class AuthController extends AbstractController
 {
     /**
-     * @Route("/auth", name="app_auth")
+     * @Route("/", name="app_auth")
      */
     public function index(): Response
     {
