@@ -78,12 +78,12 @@ class News
         return $this;
     }
 
-    public function getDateAdded(): ?\DateTimeInterface
+    public function getDateAdded(): ?\DateTimeImmutable
     {
         return $this->date_added;
     }
 
-    public function setDateAdded(\DateTimeInterface $date_added): self
+    public function setDateAdded(\DateTimeImmutable $date_added): self
     {
         $this->date_added = $date_added;
 
