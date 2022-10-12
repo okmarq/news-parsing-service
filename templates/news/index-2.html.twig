@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}News index{% endblock %}
+
+{% block body %}
+    <div class='container'>
+    {% for key in news %}
+        {{ key.title }}
+        {{ key.description }}
+        {{ key.picture }}
+        {{ key.date_added }}
+    {% endfor %}
+    </div>
+{% endblock %}

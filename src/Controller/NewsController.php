@@ -5,11 +5,13 @@ namespace App\Controller;
 use App\Entity\News;
 use App\Form\NewsType;
 use App\Repository\NewsRepository;
+use App\Service\NewsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * @Route("/news")
@@ -19,10 +21,13 @@ class NewsController extends AbstractController
     /**
      * @Route("/", name="app_news_index", methods={"GET"})
      */
-    public function index(NewsRepository $newsRepository, SessionInterface $session): Response
-    {
-        if (!in_array($session->get('role'), ['Admin', 'Moderator']))
+    public function index(
+        NewsRepository $newsRepository,
+        SessionInterface $session
+    ): Response {
+        if (!in_array($session->get('role'), ['Admin', 'Moderator'])) {
             return $this->redirectToRoute('app_auth');
+        }
 
         return $this->render('news/index.html.twig', [
             'news' => $newsRepository->findAll(),
@@ -30,10 +35,23 @@ class NewsController extends AbstractController
     }
 
     /**
+     * @Route("/fetch", name="fetch_news")
+     */
+    public function fetchNews(HttpClientInterface $client,NewsRepository $newsRepository): Response
+    {
+        $service = new NewsService($newsRepository);
+        $service->fetchNews($client);
+
+        return $this->redirectToRoute('app_news_index');
+    }
+
+    /**
      * @Route("/new", name="app_news_new", methods={"GET", "POST"})
      */
-    public function new(Request $request, NewsRepository $newsRepository): Response
-    {
+    public function new(
+        Request $request,
+        NewsRepository $newsRepository
+    ): Response {
         $news = new News();
         $form = $this->createForm(NewsType::class, $news);
         $form->handleRequest($request);
@@ -41,7 +59,11 @@ class NewsController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $newsRepository->add($news, true);
 
-            return $this->redirectToRoute('app_news_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute(
+                'app_news_index',
+                [],
+                Response::HTTP_SEE_OTHER
+            );
         }
 
         return $this->renderForm('news/new.html.twig', [
@@ -63,15 +85,22 @@ class NewsController extends AbstractController
     /**
      * @Route("/{id}/edit", name="app_news_edit", methods={"GET", "POST"})
      */
-    public function edit(Request $request, News $news, NewsRepository $newsRepository): Response
-    {
+    public function edit(
+        Request $request,
+        News $news,
+        NewsRepository $newsRepository
+    ): Response {
         $form = $this->createForm(NewsType::class, $news);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $newsRepository->add($news, true);
 
-            return $this->redirectToRoute('app_news_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute(
+                'app_news_index',
+                [],
+                Response::HTTP_SEE_OTHER
+            );
         }
 
         return $this->renderForm('news/edit.html.twig', [
@@ -83,12 +112,24 @@ class NewsController extends AbstractController
     /**
      * @Route("/{id}", name="app_news_delete", methods={"POST"})
      */
-    public function delete(Request $request, News $news, NewsRepository $newsRepository): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$news->getId(), $request->request->get('_token'))) {
+    public function delete(
+        Request $request,
+        News $news,
+        NewsRepository $newsRepository
+    ): Response {
+        if (
+            $this->isCsrfTokenValid(
+                'delete' . $news->getId(),
+                $request->request->get('_token')
+            )
+        ) {
             $newsRepository->remove($news, true);
         }
 
-        return $this->redirectToRoute('app_news_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute(
+            'app_news_index',
+            [],
+            Response::HTTP_SEE_OTHER
+        );
     }
 }

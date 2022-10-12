@@ -64,6 +64,16 @@ class NewsRepository extends ServiceEntityRepository
 //        ;
 //    }
 
+   public function findOneByTitle($value): ?News
+   {
+       return $this->createQueryBuilder('n')
+           ->andWhere('n.title = :val')
+           ->setParameter('val', $value)
+           ->getQuery()
+           ->getOneOrNullResult()
+       ;
+   }
+
     public function getPaginated(int $perpage, int $offset): Paginator
     {
         $query = $this->createQueryBuilder('n')

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\NewsRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Monolog\DateTimeImmutable;
 
 /**
  * @ORM\Entity(repositoryClass=NewsRepository::class)
@@ -78,12 +79,12 @@ class News
         return $this;
     }
 
-    public function getDateAdded(): ?\DateTimeImmutable
+    public function getdate_added(): ?\DateTimeImmutable
     {
-        return $this->date_added;
+        return \DateTimeImmutable::createFromMutable($this->date_added);
     }
 
-    public function setDateAdded(\DateTimeImmutable $date_added): self
+    public function setdate_added(\DateTimeImmutable $date_added): self
     {
         $this->date_added = $date_added;
 
