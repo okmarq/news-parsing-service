@@ -5,13 +5,11 @@ namespace App\Controller;
 use App\Entity\News;
 use App\Form\NewsType;
 use App\Repository\NewsRepository;
-use App\Service\NewsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * @Route("/news")
@@ -32,24 +30,14 @@ class NewsController extends AbstractController
 
         $perpage = max(0, $request->query->getInt('offset', 0));
         $offset = 10;
+        $news = $newsRepository->findAll();
+        // $news = $newsRepository->getPaginated($perpage, $offset);
 
         return $this->render('news/index.html.twig', [
-            // 'news' => $newsRepository->findAll(),
-            'news' => $newsRepository->getPaginated($perpage, $offset),
+            'news' => $news,
             'previous' => $offset - $perpage,
             'next' => min(count($news), $offset + $perpage),
         ]);
-    }
-
-    /**
-     * @Route("/fetch", name="fetch_news")
-     */
-    public function fetchNews(HttpClientInterface $client,NewsRepository $newsRepository): Response
-    {
-        $service = new NewsService($newsRepository);
-        $service->fetchNews($client);
-
-        return $this->redirectToRoute('app_news_index');
     }
 
     /**

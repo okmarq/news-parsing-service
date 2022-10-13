@@ -4,20 +4,14 @@ namespace App\Service;
 
 use App\Entity\News;
 use App\Repository\NewsRepository;
-
-
+use Monolog\DateTimeImmutable;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-use Monolog\DateTimeImmutable;
-
 class NewsService
 {
-    private const SECONDS_BEFORE_PUBLISHING_JOB = 10;
-
     private $newsRepository;
     private string $url = 'https://www.nytimes.com/section/technology';
-    private int $count = 0;
 
     public function __construct(NewsRepository $newsRepository)
     {
@@ -28,14 +22,13 @@ class NewsService
      * Fetch and parse news feed
      * @return array
      */
-    public function fetchNews(HttpClientInterface $client)
+    public function fetchNews(HttpClientInterface $client): array
     {
-        // paste multiple fetch processes into rabbit mq
         $response = $client->request('GET', $this->url);
         $content = $response->getContent();
 
         if (empty($content)) {
-            return;
+            return [];
         }
 
         $crawler = new Crawler($content);
@@ -57,9 +50,8 @@ class NewsService
                 return $data;
             });
 
-            // run the cron in this location
-            // cron should move it to database
-            return $this->save($data);
+        // return $this->save($data);
+        return $data;
     }
 
     /**
@@ -67,30 +59,26 @@ class NewsService
      * @param array $data
      * @return void
      */
-    private function save(
-        array $data
-    ): array {
-        // post each data into a cron for parsing to a database
+    public function save(array $data): void
+    {
         foreach ($data as $value) {
-            if ($news = $this->newsRepository->findOneByTitle($value['title'])) {
-                $news->setdate_added(new \DateTimeImmutable($value['date_added']));
+            if (
+                $news = $this->newsRepository->findOneByTitle($value['title'])
+            ) {
+                $news->setdate_added(
+                    new \DateTimeImmutable($value['date_added'])
+                );
                 $this->newsRepository->add($news, true);
-                // if still time, don't update, instead log the date added and show to viewer
-                return [];
             } else {
                 $news = new News();
                 $news->setTitle($value['title']);
                 $news->setDescription($value['description']);
                 $news->setPicture($value['picture']);
-                $news->setdate_added(new \DateTimeImmutable($value['date_added']));
+                $news->setdate_added(
+                    new \DateTimeImmutable($value['date_added'])
+                );
                 $this->newsRepository->add($news, true);
             }
-            ++$this->count;
         }
-
-        return [
-            'count'=>$this->count,
-            'website'=>$this->url,
-        ];
     }
 }

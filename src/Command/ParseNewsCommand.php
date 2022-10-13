@@ -2,61 +2,51 @@
 
 namespace App\Command;
 
-use App\Service\NewsService;
+use App\Message\ParseNewsMessage;
 use App\Repository\NewsRepository;
+use App\Service\NewsService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class ParseNewsCommand extends Command
 {
-    private $NewsRepository;
-    private $client;
-
     protected static $defaultName = 'app:parse-news';
     protected static $defaultDescription = 'This command will start fetching of articles from a news website';
+    protected $bus;
+    private $client;
+    private $newsRepository;
 
-    public function __construct(NewsRepository $NewsRepository, HttpClientInterface $client)
-    {
-        $this->NewsRepository = $NewsRepository;
-        $this->client = $client;
-
+    public function __construct(
+        MessageBusInterface $bus,
+        HttpClientInterface $client,
+        NewsRepository $newsRepository
+    ) {
         parent::__construct();
+        $this->bus = $bus;
+        $this->client = $client;
+        $this->newsRepository = $newsRepository;
     }
 
-    protected function configure(): void
-    {
-        // $this
-        //     ->addArgument('arg1', InputArgument::OPTIONAL, 'Argument description')
-        //     ->addOption('start', null, InputOption::VALUE_NONE, 'Start the parsing')
-        // ;
-    }
-
-    protected function execute(InputInterface $input, OutputInterface $output): int
-    {
+    protected function execute(
+        InputInterface $input,
+        OutputInterface $output
+    ): int {
         $io = new SymfonyStyle($input, $output);
-        // $arg1 = $input->getArgument('arg1');
 
-        // if ($arg1) {
-        //     $io->note(sprintf('You passed an argument: %s', $arg1));
-        // }
+        $io->note('Starting article parsing');
 
-        // if ($input->getOption('start')) {
-        // }
-            $io->note('Starting article parsing');
+        $newsService = new newsService($this->newsRepository);
+        $news = $newsService->fetchNews($this->client);
 
-            // parse the articles from he service and save to database from here
-            // run every 5 minutes [5 * * * *]
-            $parse = new NewsService($this->NewsRepository);
-            $response = $parse->fetchNews($this->client);
+        $this->bus->dispatch(new ParseNewsMessage($news));
 
         $io->success('parsed news articles successfully');
-        // $io->success(sprintf('parsed "%d" articles from "%s"', $response['count'], $response['url']));
 
         return Command::SUCCESS;
     }
