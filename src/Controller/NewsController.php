@@ -28,14 +28,16 @@ class NewsController extends AbstractController
             return $this->redirectToRoute('app_auth');
         }
 
-        $perpage = max(0, $request->query->getInt('offset', 0));
-        $offset = 10;
-        $news = $newsRepository->findAll();
-        // $news = $newsRepository->getPaginated($perpage, $offset);
+        $offset = max(0, $request->query->getInt('offset', 0));
+        $perpage = 10;
+
+        $news = $newsRepository->getPaginated($perpage, $offset);
 
         return $this->render('news/index.html.twig', [
             'news' => $news,
+            'pages' => $perpage % count($news),
             'previous' => $offset - $perpage,
+            'goto' => $perpage,
             'next' => min(count($news), $offset + $perpage),
         ]);
     }

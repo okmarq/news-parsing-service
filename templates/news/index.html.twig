@@ -15,22 +15,23 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Id</th>
+                        <!-- <th>Id</th> -->
                         <th>Title</th>
                         <th>Description</th>
                         <th>Picture</th>
-                        <th>Created_at</th>
-                        <th>Modified_at</th>
+                        <th>Added</th>
                         <th>actions</th>
                     </tr>
                 </thead>
                 <tbody>
                 {% for news in news %}
                     <tr>
-                        <td>{{ news.id }}</td>
+                        <!-- <td>{{ news.id }}</td> -->
                         <td>{{ news.title }}</td>
                         <td>{{ news.description }}</td>
-                        <td>{{ news.picture }}</td>
+                        <td>
+                            <img src="{{ news.picture }}" width="150" height="150">
+                        </td>
                         <td>{{ news.date_added ? news.date_added|date('Y-m-d H:i:s') : '' }}</td>
                         <td>
                             <a href="{{ path('app_news_show', {'id': news.id}) }}">show</a>
@@ -47,42 +48,32 @@
         </div>
 
         {# Pagination #}
-        <nav aria-label="...">
-            <ul class="pagination">
-            {#% if previous >= 0 %#}
-                <li class="page-item disabled">
-                    <a class="page-link">Previous</a>
-                </li>
-            {#% endif %#}
-                <li class="page-item">
-                    <a class="page-link" href="#">1</a>
-                </li>
-                <li class="page-item active" aria-current="page">
-                    <a class="page-link" href="#">2</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="#">3</a>
-                </li>
-            {#% if next < news|length %#}
-                <li class="page-item">
-                    <a class="page-link" href="#">Next</a>
-                </li>
-            {#% endif %#}
-            </ul>
-        </nav>
-
         <nav aria-label="News page navigation" class="d-flex justify-content-center mb-5">
             <ul class="pagination">
-                {#% if previous >= 0 %#}
-                    <li class="page-item">
-                        <a class="page-link" href="{#{ path('app_news_index', { offset: previous }) }#}">Previous</a>
+            {% if previous >= 0 %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ path('app_news_index', { offset: previous }) }}">Previous</a>
+                </li>
+            {% endif %}
+
+            <!-- {% for page in 1..pages %}
+                {% if page %}
+                    <li class="page-item active" aria-current="page">
+                        <a class="page-link" href="{{ path('app_news_index', { offset: goto * page }) }}">{{ page }}</a>
                     </li>
-                {#% endif %#}
-                {#% if next < news|length %#}
+                {% else %}
                     <li class="page-item">
-                        <a class="page-link" href="{#{ path('app_news_index', { offset: next }) }#}">Next</a>
+                        <a class="page-link" href="{{ path('app_news_index', { offset: goto * page }) }}">{{ page }}</a>
                     </li>
-                {#% endif %#}
+            {% endif %}
+            {% endfor %} -->
+
+                <!-- <li class="page-item active" aria-current="page"></li> -->
+            {% if next < news|length %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ path('app_news_index', { offset: next }) }}">Next</a>
+                </li>
+            {% endif %}
             </ul>
         </nav>
         {# Pagination #}
