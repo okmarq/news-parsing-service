@@ -22,6 +22,7 @@ class NewsController extends AbstractController
      * @Route("/", name="app_news_index", methods={"GET"})
      */
     public function index(
+        Request $request,
         NewsRepository $newsRepository,
         SessionInterface $session
     ): Response {
@@ -29,8 +30,14 @@ class NewsController extends AbstractController
             return $this->redirectToRoute('app_auth');
         }
 
+        $perpage = max(0, $request->query->getInt('offset', 0));
+        $offset = 10;
+
         return $this->render('news/index.html.twig', [
-            'news' => $newsRepository->findAll(),
+            // 'news' => $newsRepository->findAll(),
+            'news' => $newsRepository->getPaginated($perpage, $offset),
+            'previous' => $offset - $perpage,
+            'next' => min(count($news), $offset + $perpage),
         ]);
     }
 
