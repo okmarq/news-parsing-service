@@ -4,16 +4,24 @@ services:
 ###> doctrine/doctrine-bundle ###
   database:
     image: mysql:latest
+    restart: unless-stopped
     environment:
-      MYSQL_DATABASE: ${MYSQL_DB:-news_parsing_service}
       MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD:-password}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-password}
+      MYSQL_DATABASE: ${MYSQL_DB:-news_parsing_service}
       MYSQL_USER: ${MYSQL_USER:-user}
     ports:
-      - 3306:3306
-    expose:
-      - 3306
+      - 3307:3306
     volumes:
       - db-data:/var/lib/mysql/data:rw
+
+  symfony:
+    build: .
+    ports:
+      - 8080:80
+    depends_on:
+      - database
+
   rabbitmq:
     image: rabbitmq:3.11-management
     environment:
