@@ -8,7 +8,7 @@ RUN a2enmod rewrite
 RUN apt-get update \
   && apt-get install -y libzip-dev git wget --no-install-recommends \
   && apt-get clean \
-  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/lib/mysql/*
 
 RUN docker-php-ext-install pdo mysqli pdo_mysql zip;
 
@@ -20,6 +20,14 @@ COPY apache.conf /etc/apache2/sites-enabled/000-default.conf
 COPY entrypoint.sh /entrypoint.sh
 
 RUN chmod +x /entrypoint.sh
+
+RUN chown -R www-data var/cache/
+
+RUN chown -R www-data var/log/
+
+RUN chmod -R ugo+rw /var/log
+
+RUN chmod -R ugo+rw /var/cache
 
 COPY . /var/www
 

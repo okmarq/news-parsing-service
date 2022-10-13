@@ -2,7 +2,7 @@ version: '3'
 
 services:
 ###> doctrine/doctrine-bundle ###
-  database:
+  mysql:
     image: mysql:latest
     restart: unless-stopped
     environment:
@@ -13,14 +13,14 @@ services:
     ports:
       - 3307:3306
     volumes:
-      - db-data:/var/lib/mysql/data:rw
+      - db-data:/var/lib/mysql/
 
   symfony:
     build: .
     ports:
       - 8080:80
     depends_on:
-      - database
+      - mysql
 
   rabbitmq:
     image: rabbitmq:3.11-management
