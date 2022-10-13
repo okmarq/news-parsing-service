@@ -3,36 +3,43 @@
 {% block title %}News{% endblock %}
 
 {% block body %}
-    <h1>News</h1>
+<nav class="navbar navbar-dark bg-primary mb-3">
+    <div class="container">
+        <h1 class="navbar-brand">Article</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ news.id }}</td>
-            </tr>
-            <tr>
-                <th>Title</th>
-                <td>{{ news.title }}</td>
-            </tr>
-            <tr>
-                <th>Description</th>
-                <td>{{ news.description }}</td>
-            </tr>
-            <tr>
-                <th>Picture</th>
-                <td>{{ news.picture }}</td>
-            </tr>
-            <tr>
-                <th>Date_added</th>
-                <td>{{ news.dateAdded ? news.dateAdded|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
+        <div class='d-flex align-items-center'>
+            <span>Signed in as <b>{{ app.session.get('role') }}</b>&nbsp&nbsp</span>
 
-    <a href="{{ path('app_news_index') }}">back to list</a>
+            <a class='text-white' href="{{ path('logout') }}">Logout</a>
+        </div>
+    </div>
+</nav>
 
-    <a href="{{ path('app_news_edit', {'id': news.id}) }}">edit</a>
+<div class='container'>
+    <div class="card mb-3" style="max-width: 640px;">
+        <div class="row g-0">
+            <div class="col-md-4">
+                <img src="{{ news.picture }}" class="img-fluid rounded-start">
+            </div>
 
-    {{ include('news/_delete_form.html.twig') }}
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title">{{ news.title }}</h5>
+
+                    <p class="card-text">{{ news.description }}</p>
+
+                    <p class="card-text">
+                        <small class="text-muted">{{ news.date_added ? news.date_added|date('Y-m-d H:i:s') : '' }}</small>
+                    </p>
+
+                    <div class='d-flex justify-content-between'>
+                        <a class='btn btn-sm btn-outline-primary' href="{{ path('app_news_index') }}">back to list</a>
+
+                        {{ include('news/_delete_form.html.twig') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

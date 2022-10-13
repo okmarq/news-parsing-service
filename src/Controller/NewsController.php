@@ -24,9 +24,8 @@ class NewsController extends AbstractController
         NewsRepository $newsRepository,
         SessionInterface $session
     ): Response {
-        if (!in_array($session->get('role'), ['Admin', 'Moderator'])) {
+        if (!in_array($session->get('role'), ['Admin', 'Moderator']))
             return $this->redirectToRoute('app_auth');
-        }
 
         $offset = max(0, $request->query->getInt('offset', 0));
         $perpage = 10;
@@ -112,8 +111,13 @@ class NewsController extends AbstractController
     public function delete(
         Request $request,
         News $news,
-        NewsRepository $newsRepository
+        NewsRepository $newsRepository,
+        SessionInterface $session
     ): Response {
+        if ($session->get('role') !== 'Admin') {
+            return $this->redirectToRoute('app_auth');
+        }
+
         if (
             $this->isCsrfTokenValid(
                 'delete' . $news->getId(),

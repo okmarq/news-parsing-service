@@ -3,81 +3,70 @@
 {% block title %}News index{% endblock %}
 
 {% block body %}
-    <div class='container'>
-        <h1>Articles</h1>
+<nav class="navbar navbar-dark bg-primary mb-3">
+    <div class="container">
+        <h1 class="navbar-brand">Article</h1>
 
-        <div class='d-flex'>
-            <p>Signed in as <span>{{ app.session.get('role') }}</span>&nbsp</p>
-            <a href="{{ path('logout') }}">Logout</a>
+        <div class='d-flex align-items-center'>
+            <span>Signed in as <b>{{ app.session.get('role') }}</b>&nbsp&nbsp</span>
+
+            <a class='text-white' href="{{ path('logout') }}">Logout</a>
         </div>
-
-        <div>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <!-- <th>Id</th> -->
-                        <th>Title</th>
-                        <th>Description</th>
-                        <th>Picture</th>
-                        <th>Added</th>
-                        <th>actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for news in news %}
-                    <tr>
-                        <!-- <td>{{ news.id }}</td> -->
-                        <td>{{ news.title }}</td>
-                        <td>{{ news.description }}</td>
-                        <td>
-                            <img src="{{ news.picture }}" width="150" height="150">
-                        </td>
-                        <td>{{ news.date_added ? news.date_added|date('Y-m-d H:i:s') : '' }}</td>
-                        <td>
-                            <a href="{{ path('app_news_show', {'id': news.id}) }}">show</a>
-                            <a href="{{ path('app_news_edit', {'id': news.id}) }}">edit</a>
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="7">no records found</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
-        {# Pagination #}
-        <nav aria-label="News page navigation" class="d-flex justify-content-center mb-5">
-            <ul class="pagination">
-            {% if previous >= 0 %}
-                <li class="page-item">
-                    <a class="page-link" href="{{ path('app_news_index', { offset: previous }) }}">Previous</a>
-                </li>
-            {% endif %}
-
-            <!-- {% for page in 1..pages %}
-                {% if page %}
-                    <li class="page-item active" aria-current="page">
-                        <a class="page-link" href="{{ path('app_news_index', { offset: goto * page }) }}">{{ page }}</a>
-                    </li>
-                {% else %}
-                    <li class="page-item">
-                        <a class="page-link" href="{{ path('app_news_index', { offset: goto * page }) }}">{{ page }}</a>
-                    </li>
-            {% endif %}
-            {% endfor %} -->
-
-                <!-- <li class="page-item active" aria-current="page"></li> -->
-            {% if next < news|length %}
-                <li class="page-item">
-                    <a class="page-link" href="{{ path('app_news_index', { offset: next }) }}">Next</a>
-                </li>
-            {% endif %}
-            </ul>
-        </nav>
-        {# Pagination #}
-
-        <a href="{{ path('app_news_new') }}">Create new</a>
     </div>
+</nav>
+
+<div class='container'>
+    <div>
+        {% for news in news %}
+        <div class="card mb-3" style="max-width: 540px;">
+            <div class="row g-0">
+                <div class="col-md-4">
+                    <img src="{{ news.picture }}" class="img-fluid rounded-start">
+                </div>
+
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 class="card-title"><a href="{{ path('app_news_show', {'id': news.id}) }}">{{ news.title }}</a></h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div>
+            <p colspan="7">no records found</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    {# Pagination #}
+    <nav aria-label="News page navigation" class="d-flex justify-content-center mb-5">
+        <ul class="pagination">
+        {% if previous >= 0 %}
+            <li class="page-item">
+                <a class="page-link" href="{{ path('app_news_index', { offset: previous }) }}">Previous</a>
+            </li>
+        {% endif %}
+
+        <!-- {% for page in 1..pages %}
+            {% if page %}
+                <li class="page-item active" aria-current="page">
+                    <a class="page-link" href="{{ path('app_news_index', { offset: goto * page }) }}">{{ page }}</a>
+                </li>
+            {% else %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ path('app_news_index', { offset: goto * page }) }}">{{ page }}</a>
+                </li>
+        {% endif %}
+        {% endfor %} -->
+
+            <!-- <li class="page-item active" aria-current="page"></li> -->
+        {% if next < news|length %}
+            <li class="page-item">
+                <a class="page-link" href="{{ path('app_news_index', { offset: next }) }}">Next</a>
+            </li>
+        {% endif %}
+        </ul>
+    </nav>
+    {# Pagination #}
+</div>
 {% endblock %}
