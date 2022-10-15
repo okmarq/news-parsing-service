@@ -30,24 +30,22 @@ administrators have special permissions to delete unwanted articles.
 start docker
 `docker-compose up -d`
 
+visit the project on your browser
+`localhost:8000`
+
 see containers
 `docker-compose ps`
 
 access the news service container
 `docker exec -it news-parsing-service-symfony-1 bash`
 
-install composer
-`composer install`
-
-RUN `chown -R www-data /var/log/dev.log`
-RUN `chmod -R ugo+rw /var/log/dev.log`
-if the above command doesn't work, cd into /var/log/ then change ownership of dev.log to www-data
-RUN `cd /var/log/`
-RUN `chown www-data dev.log`
-RUN `chmod ugo+rw dev.log`
-
 set up the project database
 `php bin/console doctrine:database:create`
+
+install composer if it says command not found
+`composer install`
+
+note: symfony cli is not installed, use `php bin/console` instead
 
 make the migrations
 `php bin/console make:migration`
