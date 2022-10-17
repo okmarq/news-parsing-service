@@ -1,74 +1,77 @@
-version: "3.9"
+version: '3.9'
+
+networks:
+  news_parser:
 
 services:
-  database:
-    container_name: database
-    image: "percona:ps-8"
-    command: --default-authentication-plugin=mysql_native_password
-    environment:
-      MYSQL_DATABASE: ${MYSQL_DB:-news_parsing_service}
-      MYSQL_USER: ${MYSQL_USER:-user}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD:-password}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-password}
-    ports:
-      - "3307:3306"
-    networks:
-      - app-tier
-    volumes:
-      - ./mysql:/var/lib/mysql
-
-  php:
-    container_name: php
+  server:
+    container_name: '${APP_NAME}-server'
     build:
-      context: ./php
+      context: .
+      dockerfile: ./docker/server/Dockerfile
     ports:
-      - '9000:9000'
+      - '${APP_PORT}:80'
+    working_dir: /var/www/html
+    environment:
+      - 'DATABASE_URL=mysql://${MYSQL_USER}:${MYSQL_PASS}@db_server:3306/${MYSQL_DB}?serverVersion=8&charset=utf8mb4'
     volumes:
-      - ./app:/var/www/symfony_docker
+      - ./app:/var/www/html
+      - ./docker/server/apache/sites-enabled:/etc/apache2/sites-enabled
+      - ./docker/server/php/php.ini:/usr/local/etc/php/conf.d/extra-php-config.ini
     depends_on:
-      - database
-    links:
-      - database
-      - rabbitmq
+      db_server:
+        condition: service_healthy
     networks:
-      - app-tier
+      - news_parser
 
-  nginx:
-    container_name: nginx
-    image: nginx:stable-alpine
+  db_server:
+    image: mysql:8
+    container_name: '${APP_NAME}-db'
+    restart: always
     ports:
-      - "8080:80"
+      - '${DB_PORT}:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASS}'
+      MYSQL_USER: '${MYSQL_USER}'
+      MYSQL_PASSWORD: '${MYSQL_PASS}'
+      MYSQL_DATABASE: '${MYSQL_DB}'
     volumes:
-      - ./app:/var/www/symfony_docker
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - php
-      - database
+      - db_data:/var/lib/mysql
+      - ./docker/db/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u root --password=$$MYSQL_ROOT_PASSWORD
+      interval: 5s
+      retries: 5
     networks:
-      - app-tier
+      - news_parser
+
+  db_admin:
+    image: phpmyadmin/phpmyadmin:5
+    container_name: '${APP_NAME}-db-admin'
+    ports:
+      - '${APP_DB_ADMIN_PORT}:80'
+    environment:
+      PMA_HOST: db_server
+    depends_on:
+      db_server:
+        condition: service_healthy
+    volumes:
+      - db_admin_data:/var/www/html
+    networks:
+      - news_parser
 
   rabbitmq:
     container_name: rabbitmq
-    image: "rabbitmq:3.11-management"
+    image: rabbitmq:3.11-management
     environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
+      - RABBITMQ_DEFAULT_USER='${RABBITMQ_USER}'
+      - RABBITMQ_DEFAULT_PASS='${RABBITMQ_PASS}'
     ports:
-      - "15672:15672"
-      - "5672:5672"
+      - '${RABBITMQ_PORT1}:5672'
+      - '${RABBITMQ_PORT2}:15672'
     networks:
-      - app-tier
+      - news_parser
 
-  adminer:
-    container_name: adminer
-    image: adminer
-    ports:
-      - "3000:8080"
-    depends_on:
-      - database
-    networks:
-      - app-tier
-
-networks:
-  app-tier:
-    driver: bridge
+volumes:
+  db_data:
+  db_admin_data:

@@ -6,7 +6,7 @@ RUN apt update \
   && apt install -y zlib1g-dev g++ git libicu-dev zip libzip-dev zip \
   && docker-php-ext-install intl opcache pdo pdo_mysql \
   && pecl install apcu \
-  && docker-php-ext-enable apcu \
+  && docker-php-ext-enable apcu --ini-name docker-php-ext-10-apcu.ini \
   && docker-php-ext-configure zip \
   && docker-php-ext-install zip
 
@@ -22,14 +22,14 @@ COPY entrypoint.sh /entrypoint.sh
 
 RUN chmod +x /entrypoint.sh
 
-COPY ./app /var/www/symfony_docker/app
+COPY . /var/www/symfony_docker
 
-RUN chmod -R ugo+rw /var/www/symfony_docker/app/var/log
+# RUN chmod ugo+rw /var/www/symfony_docker/var/log
 
-RUN chmod -R ugo+rw /var/www/symfony_docker/app/var/cache
+# RUN chmod ugo+rw /var/www/symfony_docker/var/cache
 
-RUN chown -R www-data /var/www/symfony_docker/appvar/log/
+# RUN chown www-data /var/www/symfony_docker/var/log/
 
-RUN chown -R www-data /var/www/symfony_docker/appvar/cache/
+# RUN chown www-data /var/www/symfony_docker/var/cache/
 
 ENTRYPOINT ["/entrypoint.sh"]
