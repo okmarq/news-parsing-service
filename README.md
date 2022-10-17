@@ -39,16 +39,10 @@ see containers
 access the news service container
 `docker exec -it news-parsing-service-symfony-1 bash`
 
-set up the project database
-`php bin/console doctrine:database:create`
-
 install composer if it says command not found
 `composer install`
 
-note: symfony cli is not installed, use `php bin/console` instead
-
-make the migrations
-`php bin/console make:migration`
+note: if symfony cli is not installed, use `php bin/console` instead
 
 execute the migrations
 `php bin/console doctrine:migrations:migrate`
