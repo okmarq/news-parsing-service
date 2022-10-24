@@ -31,30 +31,25 @@ start docker
 `docker-compose up -d`
 
 visit the project on your browser
-`localhost:8000`
+`localhost:9000`
 
 see containers
 `docker-compose ps`
 
 access the news service container
-`docker exec -it news-parsing-service-symfony-1 bash`
-
-install composer if it says command not found
-`composer install`
-
-note: if symfony cli is not installed, use `php bin/console` instead
-
-execute the migrations
-`php bin/console doctrine:migrations:migrate`
+`docker exec -it news_parsing_service-server bash`
 
 consume messages
-`php bin/console messenger:consume async -vv`
+`symfony console messenger:consume async -vv`
+
+open a new cli in docker to parse news via cli
+`docker exec -it news_parsing_service-server bash`
 
 parse news via cli
-`php bin/console app:parse-news`
+`symfony console app:parse-news`
 
 visit the rabbit mq dashboard on the web to view jobs
 
 look into rabbit mq
-`docker exec -it news-parsing-service-rabbitmq-1 bash`
+`docker exec -it rabbitmq bash`
 [`rabbitmqctl  list_queues`]

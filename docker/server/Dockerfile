@@ -11,11 +11,13 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
   && docker-php-ext-install sockets \
   &&  pecl install amqp \
-  && docker-php-ext-enable amqp
+  && docker-php-ext-enable amqp \
+  && pecl install apcu \
+  && docker-php-ext-enable apcu
 
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
-RUN install-php-extensions gd pdo mysqli pdo_mysql bcmath zip intl opcache
+RUN install-php-extensions gd mysqli pdo_mysql bcmath zip intl opcache
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 

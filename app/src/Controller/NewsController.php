@@ -32,9 +32,11 @@ class NewsController extends AbstractController
 
         $news = $newsRepository->getPaginated($perpage, $offset);
 
+        $news_count = (count($news)) ? (count($news)) : 1;
+
         return $this->render('news/index.html.twig', [
             'news' => $news,
-            'pages' => $perpage % count($news),
+            'pages' => $perpage % $news_count,
             'previous' => $offset - $perpage,
             'goto' => $perpage,
             'next' => min(count($news), $offset + $perpage),

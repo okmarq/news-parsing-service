@@ -64,8 +64,8 @@ services:
     container_name: rabbitmq
     image: rabbitmq:3.11-management
     environment:
-      - RABBITMQ_DEFAULT_USER='${RABBITMQ_USER}'
-      - RABBITMQ_DEFAULT_PASS='${RABBITMQ_PASS}'
+      RABBITMQ_DEFAULT_USER: '${RABBITMQ_USER}'
+      RABBITMQ_DEFAULT_PASS: '${RABBITMQ_PASS}'
     ports:
       - '${RABBITMQ_PORT1}:5672'
       - '${RABBITMQ_PORT2}:15672'
