@@ -26,6 +26,9 @@ administrators have special permissions to delete unwanted articles.
 - there must be pagination at the end of the list of articles (10 per page)
 
 ### SETUP
+after starting the container, 
+please wait for the application server to completely install dependencies 
+then start the apache server before the application can be accessed
 
 start docker
 `docker-compose up -d`
