@@ -55,4 +55,4 @@ visit the rabbit mq dashboard on the web to view jobs
 
 look into rabbit mq
 `docker exec -it rabbitmq bash`
-[`rabbitmqctl  list_queues`]
+[`rabbitmqctl list_queues`]

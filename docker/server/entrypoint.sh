@@ -8,8 +8,6 @@ chown -R www-data /var/www/html/var/log/
 
 chown -R www-data /var/www/html/var/cache/
 
-composer install -n
-
 symfony console doctrine:migrations:migrate -n
 
 exec "$@"

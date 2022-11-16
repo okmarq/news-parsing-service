@@ -35,6 +35,8 @@ COPY ./docker/server/php/php_amqp.dll /etc/bin/php/php7.4.26/ext
 
 COPY ./app /var/www/html
 
+RUN composer install -n
+
 CMD ["apache2-foreground"]
 
 ENTRYPOINT ["/entrypoint.sh"]
