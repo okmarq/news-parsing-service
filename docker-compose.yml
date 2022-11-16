@@ -25,7 +25,7 @@ services:
       - news_parser
 
   db_server:
-    image: mysql:8
+    image: okmarq/mysql:8
     container_name: '${APP_NAME}-db'
     restart: always
     ports:
@@ -46,7 +46,7 @@ services:
       - news_parser
 
   db_admin:
-    image: phpmyadmin/phpmyadmin:5
+    image: okmarq/phpmyadmin:5
     container_name: '${APP_NAME}-db-admin'
     ports:
       - '${APP_DB_ADMIN_PORT}:80'
@@ -62,7 +62,7 @@ services:
 
   rabbitmq:
     container_name: rabbitmq
-    image: rabbitmq:3.11-management
+    image: okmarq/rabbitmq:3.11-management
     environment:
       RABBITMQ_DEFAULT_USER: '${RABBITMQ_USER}'
       RABBITMQ_DEFAULT_PASS: '${RABBITMQ_PASS}'
